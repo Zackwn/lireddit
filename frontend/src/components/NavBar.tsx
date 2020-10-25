@@ -7,7 +7,7 @@ const NavBar: React.FC = () => {
 
   const [{ data, fetching }] = useMeQuery()
 
-  let body = null
+  let body: JSX.Element | null = null
   // data is loading
   if (fetching) {
 
@@ -36,7 +36,7 @@ const NavBar: React.FC = () => {
   }
 
   return (
-    <Flex bg='tomato' p={4}>
+    <Flex bg='tan' p={4}>
       <Box ml="auto">
         {body}
       </Box>
