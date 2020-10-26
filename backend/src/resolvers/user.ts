@@ -2,7 +2,7 @@ import { Resolver, Mutation, InputType, Field, Arg, Ctx, ObjectType, Query } fro
 import { MyContext } from "src/types";
 import { User } from "../entities/User";
 import argon2 from "argon2"
-import { MIN_USERNAME_LENGTH, MIN_PASSWORD_LENGTH } from "../constants";
+import { MIN_USERNAME_LENGTH, MIN_PASSWORD_LENGTH, COOKIE_NAME } from "../constants";
 // import { EntityManager } from '@mikro-orm/postgresql'
 
 @InputType()
@@ -164,5 +164,23 @@ export class UserResolver {
   ) {
     await em.nativeDelete(User, {})
     return 'ok'
+  }
+
+  @Mutation(() => Boolean)
+  async logout(
+    @Ctx() { req, res }: MyContext
+  ) {
+    return new Promise(resolve => {
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME)
+        if (err) {
+          console.log(err)
+          resolve(false)
+          return
+        }
+  
+        resolve(true)
+      })
+    })
   }
 }

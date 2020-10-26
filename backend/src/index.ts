@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { MikroORM } from "@mikro-orm/core"
-import { __prod__, __port__ } from "./constants"
+import { __prod__, __port__, COOKIE_NAME } from "./constants"
 import mikroConfig from './mikro-orm.config'
 import express from 'express'
 import { ApolloServer } from "apollo-server-express"
@@ -39,7 +39,7 @@ const main = async () => {
         sameSite: "lax",
         secure: __prod__
       },
-      name: 'qid',
+      name: COOKIE_NAME,
       saveUninitialized: false,
       secret: 'jnibhuvgkycfctyvgkujbhlkj',
       resave: false,
