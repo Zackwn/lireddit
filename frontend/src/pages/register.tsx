@@ -7,6 +7,8 @@ import { useRegisterMutation } from '../generated/graphql'
 import { validateRequiredFields } from '../utils/validateRequiredFields'
 import { toErrorMap } from '../utils/toErrorMap'
 import { useRouter } from 'next/router'
+import { withUrqlClient } from 'next-urql'
+import { createUrqlClient } from '../utils/createUrqlClient'
 // import { toErrorMap } from '../utils/toErrorMap'
 
 interface RegisterProps { }
@@ -23,14 +25,14 @@ const Register: React.FC<RegisterProps> = () => {
           const FormErrors = validateRequiredFields(values)
 
           if (FormErrors) {
-            return setErrors({...FormErrors})
+            return setErrors({ ...FormErrors })
           }
 
           console.log('register...')
 
-          const response = await Register({ 
+          const response = await Register({
             password: values.password,
-            username: values.username 
+            username: values.username
           })
 
           const APIErrors = response.data?.register.errors
@@ -73,4 +75,4 @@ const Register: React.FC<RegisterProps> = () => {
   )
 }
 
-export default Register
+export default withUrqlClient(createUrqlClient)(Register)
