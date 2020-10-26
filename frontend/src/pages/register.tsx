@@ -9,7 +9,6 @@ import { toErrorMap } from '../utils/toErrorMap'
 import { useRouter } from 'next/router'
 import { withUrqlClient } from 'next-urql'
 import { createUrqlClient } from '../utils/createUrqlClient'
-// import { toErrorMap } from '../utils/toErrorMap'
 
 interface RegisterProps { }
 
@@ -32,7 +31,8 @@ const Register: React.FC<RegisterProps> = () => {
 
           const response = await Register({
             password: values.password,
-            username: values.username
+            username: values.username,
+            email: 'bob@bob.com'
           })
 
           const APIErrors = response.data?.register.errors
