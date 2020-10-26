@@ -67,6 +67,15 @@ export class UserResolver {
       })
     }
 
+    const emailTaken = await em.findOne(User, { email: options.email })
+
+    if (emailTaken) {
+      errors.push({
+        field: 'email',
+        message: 'email alredy taken'
+      })
+    }
+
     if (errors.length >= 1) {
       return { errors }
     }
