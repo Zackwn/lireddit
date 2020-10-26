@@ -36,12 +36,12 @@ export class UserResolver {
     @Arg('options') options: UserOptionsInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const errors = validateRegister(options)
+    const errorsArray = validateRegister(options)
 
     const usernameTaken = await em.findOne(User, { username: options.username })
 
     if (usernameTaken) {
-      errors.push({
+      errorsArray.push({
         field: 'username',
         message: 'username alredy taken'
       })
@@ -50,14 +50,14 @@ export class UserResolver {
     const emailTaken = await em.findOne(User, { email: options.email })
 
     if (emailTaken) {
-      errors.push({
+      errorsArray.push({
         field: 'email',
         message: 'email alredy taken'
       })
     }
 
-    if (errors.length >= 1) {
-      return { errors }
+    if (errorsArray.length >= 1) {
+      return { errors: errorsArray }
     }
 
     try {
