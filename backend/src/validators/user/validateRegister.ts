@@ -1,5 +1,6 @@
 import { MIN_PASSWORD_LENGTH, MIN_USERNAME_LENGTH } from "../../constants"
-import { FieldError, UserOptionsInput } from "../../resolvers/user"
+import { FieldError } from "../../resolvers/user/FieldError"
+import { UserOptionsInput } from "../../resolvers/user/UserOptionsInput"
 
 export const validateRegister = (userInputOptions: UserOptionsInput) => {
   const errors: FieldError[] = []
@@ -7,6 +8,13 @@ export const validateRegister = (userInputOptions: UserOptionsInput) => {
     errors.push({
       field: 'email',
       message: 'invalid email'
+    })
+  }
+
+  if (userInputOptions.username.includes('@')) {
+    errors.push({
+      field: 'username',
+      message: 'cannot include an @'
     })
   }
 

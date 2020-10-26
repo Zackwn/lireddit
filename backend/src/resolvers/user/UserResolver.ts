@@ -1,31 +1,11 @@
 import argon2 from "argon2";
 import { MyContext } from "src/types";
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
-import { COOKIE_NAME } from "../constants";
-import { User } from "../entities/User";
-import { validateRegister } from "../validators/user/validateRegister";
-// import { EntityManager } from '@mikro-orm/postgresql'
-
-@InputType()
-export class UserOptionsInput {
-  @Field()
-  username: string
-
-  @Field()
-  password: string
-
-  @Field()
-  email: string
-}
-
-@ObjectType()
-export class FieldError {
-  @Field()
-  field: string
-
-  @Field()
-  message: string
-}
+import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { COOKIE_NAME } from "../../constants";
+import { User } from "../../entities/User";
+import { validateRegister } from "../../validators/user/validateRegister";
+import { FieldError } from "./FieldError";
+import { UserOptionsInput } from "./UserOptionsInput";
 
 @ObjectType()
 class UserResponse {
