@@ -1,4 +1,4 @@
-import { MIN_PASSWORD_LENGTH, MIN_USERNAME_LENGTH } from "src/constants"
+import { MIN_PASSWORD_LENGTH, MIN_USERNAME_LENGTH } from "../../constants"
 import { FieldError, UserOptionsInput } from "../../resolvers/user"
 
 export const validateRegister = (userInputOptions: UserOptionsInput) => {
