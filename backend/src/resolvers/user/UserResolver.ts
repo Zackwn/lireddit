@@ -200,9 +200,9 @@ export class UserResolver {
       return { errors: errorsArray }
     }
 
-    const userId = await redis.get(
-      `${FORGET_PASSWORD_REDIS_PREFIX}${token}`
-    )
+    const UserRedisKey = `${FORGET_PASSWORD_REDIS_PREFIX}${token}`
+
+    const userId = await redis.get(UserRedisKey)
 
     if (!userId) {
       return {
@@ -216,6 +216,7 @@ export class UserResolver {
     const user = await em.findOne(User, { id: parseInt(userId) })
 
     if (!user) {
+      await redis.del(UserRedisKey)
       return {
         errors: [{
           field: 'token',
@@ -227,6 +228,9 @@ export class UserResolver {
     const hashedNewPassword = await argon2.hash(newPassword)
     user.password = hashedNewPassword
     await em.persistAndFlush(user)
+
+    // remove token from redis (invalidate) 
+    await redis.del(UserRedisKey)
 
     // log in user after change password
     req.session.userId = user.id
