@@ -8,7 +8,7 @@ import { buildSchema } from "type-graphql"
 import { HelloResolver } from "./resolvers/hello"
 import { PostResolver } from './resolvers/post/PostResolver'
 import { UserResolver } from './resolvers/user/UserResolver'
-import redis from 'redis'
+import Redis from 'ioredis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
 import cors from 'cors'
@@ -25,7 +25,7 @@ const main = async () => {
   const app = express()
 
   const RedisStore = connectRedis(session)
-  const redisClient = redis.createClient()
+  const redisClient = new Redis()
 
   app.use(cors({
     origin: 'http://localhost:3000',
@@ -58,6 +58,7 @@ const main = async () => {
     }),
     context: ({ req, res }) => ({
       em: orm.em,
+      redis: redisClient,
       req,
       res
     })
