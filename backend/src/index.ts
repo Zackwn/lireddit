@@ -6,7 +6,7 @@ import express from 'express'
 import { ApolloServer } from "apollo-server-express"
 import { buildSchema } from "type-graphql"
 import { HelloResolver } from "./resolvers/hello"
-import { PostResolver } from './resolvers/post'
+import { PostResolver } from './resolvers/post/PostResolver'
 import { UserResolver } from './resolvers/user/UserResolver'
 import redis from 'redis'
 import session from 'express-session'
