@@ -1,4 +1,4 @@
-fragment RegularPosts on Post {
+fragment RegularPost on Post {
   id
   title
   createdAt

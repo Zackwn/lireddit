@@ -11,7 +11,7 @@ type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
 // !!value => transform a value in a boolean
 // ({value: _, ...rest}) => value will be ignored
 
-const InputField: React.FC<InputFieldProps> = ({ label, size: _, ...props }) => {
+const InputField: React.FC<InputFieldProps> = ({ label, size: _, ...props }: InputFieldProps) => {
   const [field, { error }] = useField(props)
   return (
     <FormControl isInvalid={!!error}>
