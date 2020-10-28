@@ -47,7 +47,7 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
                 placeholder='new password'
                 type='password'
               />
-              {tokenError ? <Box color='red'>{tokenError}</Box> : null}
+              {tokenError ? <Box mt={2} style={{ color: "red" }}>{tokenError}</Box> : null}
               <Button
                 type='submit'
                 mt={4}
