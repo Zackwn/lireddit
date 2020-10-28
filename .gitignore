@@ -5,6 +5,7 @@
 */.next/
 */out/
 */build
+*/dist
 *.DS_Store
 */*.pem
 */npm-debug.log*
@@ -15,3 +16,6 @@
 */.env.test.local
 */.env.production.local
 */.vercel
+
+*.md
+!README.md
