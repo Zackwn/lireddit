@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { MikroORM } from "@mikro-orm/core"
-import { __prod__, __port__, COOKIE_NAME } from "./constants"
+import { __prod__, COOKIE_NAME } from "./constants"
 import mikroConfig from './mikro-orm.config'
 import express from 'express'
 import { ApolloServer } from "apollo-server-express"
@@ -69,11 +69,7 @@ const main = async () => {
     cors: false
   })
 
-  app.listen(__port__, () => {
-    console.log(`app listening on localhost:${__port__}`)
-  })
+  return app
 }
 
-main().catch(err => {
-  console.error(err)
-})
+export default main
