@@ -3,6 +3,18 @@ import { appoloTest } from '../utils/createApolloTestServer'
 
 let ApolloTest: appoloTest
 
+const createUserMutation = `mutation Register($options: UserOptionsInput!) {
+  register(options: $options) {
+     errors {
+      message
+    }
+    user {
+      id
+      username
+    }
+  }
+}`
+
 describe('User resolver session', () => {
   beforeAll(async (done) => {
     ApolloTest = new appoloTest()
@@ -17,22 +29,10 @@ describe('User resolver session', () => {
   })
 
   it('should successfully create a user', async (done) => {
-    const mutation = `mutation Register($options: UserOptionsInput!) {
-      register(options: $options) {
-         errors {
-          message
-        }
-        user {
-          id
-          username
-        }
-      }
-    }`
-
     const response: any = await request(ApolloTest.expressApp)
       .post('/graphql')
       .send({
-        query: mutation,
+        query: createUserMutation,
         variables: {
           options: {
             username: 'test user',
@@ -47,23 +47,41 @@ describe('User resolver session', () => {
     return done()
   })
 
-  // it('should create and get a user', async (done) => {
-  //   const response = await ApolloTest.client.query({
-  //     query: `query Me {
-  //       me {
-  //         id
-  //         username
-  //         createdAt
-  //         updatedAt
-  //       }
-  //     }`,
-  //     variables: {},
-  //   })
+  it('should create a user and fetch its', async (done) => {
+    const user = {
+      username: 'test user 2',
+      email: 'test@test.com2',
+      password: 'testpassword2'
+    }
 
-  //   console.log(response)
+    const responseCreateUser = await request(ApolloTest.expressApp)
+      .post('/graphql')
+      .send({
+        query: createUserMutation,
+        variables: {
+          options: user
+        }
+      })
 
-  //   expect(2).toBe(2)
-  //   done()
-  // })
+    const cookie = responseCreateUser.headers['set-cookie']
+
+    const response = await request(ApolloTest.expressApp)
+      .post('/graphql')
+      .set('Cookie', [cookie])
+      .send({
+        query: `query Me {
+          me {
+            id
+            username
+            createdAt
+            updatedAt
+          }
+        }`,
+        variables: {}
+      })
+
+    expect(response.body.data?.me?.username).toBe(user.username)
+    done()
+  })
 
 })

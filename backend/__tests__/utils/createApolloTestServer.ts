@@ -6,7 +6,7 @@ import session from 'express-session'
 import Redis from 'ioredis'
 import 'reflect-metadata'
 import { buildSchema } from "type-graphql"
-import { COOKIE_NAME, __prod__ } from '../../src/constants'
+import { TEST_COOKIE_NAME } from '../../src/constants'
 import { Post } from '../../src/entities/Post'
 import { User } from '../../src/entities/User'
 import { HelloResolver } from '../../src/resolvers/hello'
@@ -70,9 +70,9 @@ export class appoloTest {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 2, // 2 years
         httpOnly: true,
         sameSite: "lax",
-        secure: __prod__
+        secure: false
       },
-      name: COOKIE_NAME,
+      name: TEST_COOKIE_NAME,
       saveUninitialized: false,
       secret: 'jnibhuvgkycfctyvgkujbhlkj',
       resave: false,
