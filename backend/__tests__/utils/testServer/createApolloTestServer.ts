@@ -6,12 +6,12 @@ import session from 'express-session'
 import Redis from 'ioredis'
 import 'reflect-metadata'
 import { buildSchema } from "type-graphql"
-import { TEST_COOKIE_NAME } from '../../src/constants'
-import { Post } from '../../src/entities/Post'
-import { User } from '../../src/entities/User'
-import { HelloResolver } from '../../src/resolvers/hello'
-import { PostResolver } from '../../src/resolvers/post/PostResolver'
-import { UserResolver } from '../../src/resolvers/user/UserResolver'
+import { TEST_COOKIE_NAME } from '../../../src/constants'
+import { Post } from '../../../src/entities/Post'
+import { User } from '../../../src/entities/User'
+import { HelloResolver } from '../../../src/resolvers/hello'
+import { PostResolver } from '../../../src/resolvers/post/PostResolver'
+import { UserResolver } from '../../../src/resolvers/user/UserResolver'
 import { createTestDatabaseConnection } from './createTestDatabaseConnection'
 
 export class appoloTest {

@@ -1,7 +1,7 @@
 import path from "path";
-import { __prod__ } from "../../src/constants";
-import { Post } from "../../src/entities/Post";
-import { User } from "../../src/entities/User";
+import { __prod__ } from "../../../src/constants";
+import { Post } from "../../../src/entities/Post";
+import { User } from "../../../src/entities/User";
 import { MikroORM } from "@mikro-orm/core"
 
 const testConfig = {

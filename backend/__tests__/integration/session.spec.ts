@@ -1,41 +1,9 @@
 import request from 'supertest'
-import { appoloTest } from '../utils/createApolloTestServer'
+import { meUserQuery } from '../utils/graphqlQueries/Queries'
+import { registerUserMutation, loginUserMutation } from '../utils/graphqlQueries/Mutations'
+import { appoloTest } from '../utils/testServer/createApolloTestServer'
 
 let ApolloTest: appoloTest
-
-const registerUserMutation = `mutation Register($options: UserOptionsInput!) {
-  register(options: $options) {
-     errors {
-      message
-    }
-    user {
-      id
-      username
-    }
-  }
-}`
-
-const loginUserMutation = `mutation Login($usernameOrEmail: String!, $password: String!) {
-  login(usernameOrEmail: $usernameOrEmail, password: $password) {
-    errors {
-         field
-         message
-       }
-       user {
-         username
-       }
-     }
-   }
-  `
-
-const meUserQuery = `query Me {
-    me {
-      id
-      username
-      createdAt
-      updatedAt
-    }
-  }`
 
 describe('User resolver session', () => {
   beforeAll(async (done) => {
@@ -51,16 +19,18 @@ describe('User resolver session', () => {
   })
 
   it('should successfully register a user', async (done) => {
+    const user = {
+      username: 'test user',
+      email: 'test@test.com',
+      password: 'testpassword'
+    }
+
     const response: any = await request(ApolloTest.expressApp)
       .post('/graphql')
       .send({
         query: registerUserMutation,
         variables: {
-          options: {
-            username: 'test user',
-            email: 'test@test.com',
-            password: 'testpassword'
-          }
+          options: user
         }
       })
 
@@ -128,5 +98,4 @@ describe('User resolver session', () => {
     expect(response.body.data?.login?.user?.username).toBe(user.username)
     done()
   })
-
 })
