@@ -47,7 +47,7 @@ describe('User resolver session', () => {
     return done()
   })
 
-  it('should create a user and fetch its', async (done) => {
+  it('should create a user and then fetch him', async (done) => {
     const user = {
       username: 'test user 2',
       email: 'test@test.com2',
@@ -83,5 +83,4 @@ describe('User resolver session', () => {
     expect(response.body.data?.me?.username).toBe(user.username)
     done()
   })
-
 })
