@@ -3,7 +3,7 @@ import { appoloTest } from '../utils/createApolloTestServer'
 
 let ApolloTest: appoloTest
 
-const createUserMutation = `mutation Register($options: UserOptionsInput!) {
+const registerUserMutation = `mutation Register($options: UserOptionsInput!) {
   register(options: $options) {
      errors {
       message
@@ -28,6 +28,15 @@ const loginUserMutation = `mutation Login($usernameOrEmail: String!, $password: 
    }
   `
 
+const meUserQuery = `query Me {
+    me {
+      id
+      username
+      createdAt
+      updatedAt
+    }
+  }`
+
 describe('User resolver session', () => {
   beforeAll(async (done) => {
     ApolloTest = new appoloTest()
@@ -45,7 +54,7 @@ describe('User resolver session', () => {
     const response: any = await request(ApolloTest.expressApp)
       .post('/graphql')
       .send({
-        query: createUserMutation,
+        query: registerUserMutation,
         variables: {
           options: {
             username: 'test user',
@@ -70,7 +79,7 @@ describe('User resolver session', () => {
     const responseCreateUser = await request(ApolloTest.expressApp)
       .post('/graphql')
       .send({
-        query: createUserMutation,
+        query: registerUserMutation,
         variables: {
           options: user
         }
@@ -82,14 +91,7 @@ describe('User resolver session', () => {
       .post('/graphql')
       .set('Cookie', [cookie])
       .send({
-        query: `query Me {
-          me {
-            id
-            username
-            createdAt
-            updatedAt
-          }
-        }`,
+        query: meUserQuery,
         variables: {}
       })
 
@@ -97,7 +99,7 @@ describe('User resolver session', () => {
     done()
   })
 
-  it('should register a user and then login using the email', async (done) => {
+  it('should register a user and then login', async (done) => {
     const user = {
       username: 'test user 3',
       email: 'test@test.com3',
@@ -107,7 +109,7 @@ describe('User resolver session', () => {
     await request(ApolloTest.expressApp)
       .post('/graphql')
       .send({
-        query: createUserMutation,
+        query: registerUserMutation,
         variables: {
           options: user
         }
