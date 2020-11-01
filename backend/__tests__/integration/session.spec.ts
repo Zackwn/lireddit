@@ -15,6 +15,19 @@ const createUserMutation = `mutation Register($options: UserOptionsInput!) {
   }
 }`
 
+const loginUserMutation = `mutation Login($usernameOrEmail: String!, $password: String!) {
+  login(usernameOrEmail: $usernameOrEmail, password: $password) {
+    errors {
+         field
+         message
+       }
+       user {
+         username
+       }
+     }
+   }
+  `
+
 describe('User resolver session', () => {
   beforeAll(async (done) => {
     ApolloTest = new appoloTest()
@@ -28,7 +41,7 @@ describe('User resolver session', () => {
     done()
   })
 
-  it('should successfully create a user', async (done) => {
+  it('should successfully register a user', async (done) => {
     const response: any = await request(ApolloTest.expressApp)
       .post('/graphql')
       .send({
@@ -47,7 +60,7 @@ describe('User resolver session', () => {
     return done()
   })
 
-  it('should create a user and then fetch him', async (done) => {
+  it('should register a user and then fetch him', async (done) => {
     const user = {
       username: 'test user 2',
       email: 'test@test.com2',
@@ -83,4 +96,35 @@ describe('User resolver session', () => {
     expect(response.body.data?.me?.username).toBe(user.username)
     done()
   })
+
+  it('should register a user and then login using the email', async (done) => {
+    const user = {
+      username: 'test user 3',
+      email: 'test@test.com3',
+      password: 'testpassword3'
+    }
+
+    await request(ApolloTest.expressApp)
+      .post('/graphql')
+      .send({
+        query: createUserMutation,
+        variables: {
+          options: user
+        }
+      })
+
+    const response = await request(ApolloTest.expressApp)
+      .post('/graphql')
+      .send({
+        query: loginUserMutation,
+        variables: {
+          usernameOrEmail: user.email,
+          password: user.password
+        }
+      })
+
+    expect(response.body.data?.login?.user?.username).toBe(user.username)
+    done()
+  })
+
 })
