@@ -18,10 +18,29 @@ describe('User resolver session', () => {
     done()
   })
 
+  it("should fail registering a user with an @ in name", async (done) => {
+    const user = {
+      username: 'aaaaa@aaa',
+      email: '1budbuwadwb@dnwbdoa.com',
+      password: 'oiabwda'
+    }
+    const response = await request(ApolloTest.expressApp)
+      .post('/graphql')
+      .send({
+        query: registerUserMutation,
+        variables: {
+          options: user
+        }
+      })
+
+    expect(response.body.data?.register?.errors[0]?.field).toBe('username')
+    done()
+  })
+
   it("should fail login to a user the username don't exists", async (done) => {
     const user = {
       username: 'djoabdjaweiobdu',
-      email: 'dnioadbwaudgba',
+      email: 'dnioadbwa@udgba.com',
       password: '123456'
     }
     const response = await request(ApolloTest.expressApp)

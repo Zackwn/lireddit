@@ -2,6 +2,7 @@ export const registerUserMutation = `mutation Register($options: UserOptionsInpu
   register(options: $options) {
      errors {
       message
+      field
     }
     user {
       id

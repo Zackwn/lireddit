@@ -204,7 +204,8 @@ export class UserResolver {
       }
     }
 
-    const user = await User.findOne({ where: { id: parseInt(userId) } })
+    const intUserId = parseInt(userId)
+    const user = await User.findOne({ where: { id: intUserId } })
 
     if (!user) {
       await redis.del(UserRedisKey)
@@ -217,7 +218,7 @@ export class UserResolver {
     }
 
     const hashedNewPassword = await argon2.hash(newPassword)
-    User.update({ id: parseInt(userId) }, { password: hashedNewPassword })
+    User.update({ id: intUserId }, { password: hashedNewPassword })
 
     // remove token from redis (invalidate) 
     await redis.del(UserRedisKey)
