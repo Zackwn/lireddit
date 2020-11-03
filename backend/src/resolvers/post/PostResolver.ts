@@ -6,44 +6,41 @@ import { Post } from "../../entities/Post";
 export class PostResolver {
   @Query(() => [Post])
   async posts(
-    @Ctx() { em }: MyContext
+    @Ctx() { }: MyContext
   ): Promise<Post[]> {
-    const posts = await em.find(Post, {})
+    const posts = await Post.find()
     return posts
   }
 
   @Query(() => Post, { nullable: true })
   async post(
     @Arg('id', () => Int) id: number,
-    @Ctx() { em }: MyContext
-  ): Promise<Post | null> {
-    const post = await em.findOne(Post, { id })
+    @Ctx() { }: MyContext
+  ): Promise<Post | undefined> {
+    const post = await Post.findOne({ where: { id: id } })
     return post
   }
 
   @Mutation(() => Post)
   async createPost(
     @Arg('title', () => String) title: string,
-    @Ctx() { em }: MyContext
+    @Ctx() { }: MyContext
   ): Promise<Post> {
-    const post = em.create(Post, { title })
-    await em.persistAndFlush(post)
-    return post
+    return Post.create({ title }).save()
   }
 
   @Mutation(() => Post, { nullable: true })
   async updatePost(
     @Arg('id', () => Int) id: number,
     @Arg('title', () => String, { nullable: true }) title: string,
-    @Ctx() { em }: MyContext
+    @Ctx() { }: MyContext
   ): Promise<Post | null> {
-    const post = await em.findOne(Post, { id })
+    const post = await Post.findOne({ where: { id: id } })
     if (!post) {
       return null
     }
     if (typeof title !== 'undefined') {
-      post.title = title
-      await em.persistAndFlush(post)
+      await Post.update({ id: id }, { title: title })
     }
     return post
   }
@@ -51,13 +48,9 @@ export class PostResolver {
   @Mutation(() => Boolean)
   async deletePost(
     @Arg('id', () => Int) id: number,
-    @Ctx() { em }: MyContext
+    @Ctx() { }: MyContext
   ): Promise<boolean> {
-    const post = await em.findOne(Post, { id })
-    if (!post) {
-      return false
-    }
-    await em.nativeDelete(Post, { id })
+    await Post.delete({ id: id })
     return true
   }
 }

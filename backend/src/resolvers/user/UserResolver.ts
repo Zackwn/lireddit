@@ -15,24 +15,28 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   async me(
-    @Ctx() { req, em }: MyContext
-  ) {
+    @Ctx() { req }: MyContext
+  ): Promise<User | undefined> {
     const userId = req.session.userId
     if (!userId) {
-      return null
+      return undefined
     }
-    const user = await em.findOne(User, { id: userId })
+    const user = await User.findOne({ where: { id: userId } })
     return user
   }
 
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UserOptionsInput,
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const errorsArray = validateUser(options)
 
-    const usernameTaken = await em.findOne(User, { username: options.username })
+    const usernameTaken = await User.findOne({
+      where: {
+        username: options.username
+      }
+    })
 
     if (usernameTaken) {
       errorsArray.push({
@@ -41,7 +45,11 @@ export class UserResolver {
       })
     }
 
-    const emailTaken = await em.findOne(User, { email: options.email })
+    const emailTaken = await User.findOne({
+      where: {
+        email: options.email
+      }
+    })
 
     if (emailTaken) {
       errorsArray.push({
@@ -55,30 +63,13 @@ export class UserResolver {
     }
 
     try {
-      /*
-        Other way to save the user in the database:
-          let user: User
-          const result = await (em as EntityManager)
-            .createQueryBuilder(User)
-            .getKnexQuery()
-            .insert({
-              username: options.username,
-              password: hashedPassword,
-              updated_at: new Date(),
-              created_at: new Date()
-            }).returning('*')
-          user = result[0]
-      */
-
       const hashedPassword = await argon2.hash(options.password)
 
-      const user = em.create(User, {
+      const user = await User.create({
         username: options.username,
         password: hashedPassword,
         email: options.email
-      })
-
-      await em.persistAndFlush(user)
+      }).save()
 
       // store user id session
       // this will set a cookie on the user
@@ -96,13 +87,13 @@ export class UserResolver {
   async login(
     @Arg("usernameOrEmail") usernameOrEmail: string,
     @Arg("password") password: string,
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User,
-      usernameOrEmail.includes('@')
+    const user = await User.findOne({
+      where: usernameOrEmail.includes('@')
         ? { email: usernameOrEmail }
         : { username: usernameOrEmail }
-    )
+    })
     if (!user) {
       return {
         errors: [{
@@ -130,17 +121,17 @@ export class UserResolver {
 
   @Query(() => [User])
   async user(
-    @Ctx() { em }: MyContext
+    @Ctx() { }: MyContext
   ) {
-    const user = await em.find(User, {})
+    const user = await User.find()
     return user
   }
 
   @Mutation(() => String)
   async deleteUser(
-    @Ctx() { em }: MyContext
+    @Ctx() { }: MyContext
   ) {
-    await em.nativeDelete(User, {})
+    await User.delete({})
     return 'ok'
   }
 
@@ -164,9 +155,9 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async forgotPassword(
     @Arg("email") email: string,
-    @Ctx() { em, redis }: MyContext
+    @Ctx() { redis }: MyContext
   ) {
-    const user = await em.findOne(User, { email })
+    const user = await User.findOne({ where: { email } })
     if (!user) {
       // the email is not in db
       return true
@@ -193,7 +184,7 @@ export class UserResolver {
   async changePassword(
     @Arg('token') token: string,
     @Arg('newPassword') newPassword: string,
-    @Ctx() { em, redis, req }: MyContext
+    @Ctx() { redis, req }: MyContext
   ): Promise<UserResponse> {
     const errorsArray = validateUserPassword(newPassword, 'newPassword')
     if (errorsArray.length >= 1) {
@@ -213,7 +204,7 @@ export class UserResolver {
       }
     }
 
-    const user = await em.findOne(User, { id: parseInt(userId) })
+    const user = await User.findOne({ where: { id: parseInt(userId) } })
 
     if (!user) {
       await redis.del(UserRedisKey)
@@ -226,8 +217,7 @@ export class UserResolver {
     }
 
     const hashedNewPassword = await argon2.hash(newPassword)
-    user.password = hashedNewPassword
-    await em.persistAndFlush(user)
+    User.update({ id: parseInt(userId) }, { password: hashedNewPassword })
 
     // remove token from redis (invalidate) 
     await redis.del(UserRedisKey)

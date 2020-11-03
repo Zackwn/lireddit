@@ -1,7 +1,5 @@
 import 'reflect-metadata'
-import { MikroORM } from "@mikro-orm/core"
 import { __prod__, COOKIE_NAME } from "./constants"
-import mikroConfig from './mikro-orm.config'
 import express from 'express'
 import { ApolloServer } from "apollo-server-express"
 import { buildSchema } from "type-graphql"
@@ -12,15 +10,21 @@ import Redis from 'ioredis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
 import cors from 'cors'
-// import { User } from './entities/User'
-// import { sendMail } from './services/sendEmail'
+import { createConnection } from 'typeorm'
+import { Post } from './entities/Post'
+import { User } from './entities/User'
 
 const main = async () => {
-  // await sendMail('bob@bob.com', 'Hey there')
-  const orm = await MikroORM.init(mikroConfig)
-  // delete all users
-  // await orm.em.nativeDelete(User, {})
-  await orm.getMigrator().up()
+  // const conn = 
+  await createConnection({
+    type: 'postgres',
+    database: 'lireddit2',
+    username: 'postgres',
+    password: 'docker',
+    logging: true,
+    synchronize: true,
+    entities: [User, Post]
+  })
 
   const app = express()
 
@@ -57,7 +61,6 @@ const main = async () => {
       validate: false
     }),
     context: ({ req, res }) => ({
-      em: orm.em,
       redis: redisClient,
       req,
       res
