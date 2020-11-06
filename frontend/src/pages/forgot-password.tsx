@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import Wrapper from '../components/Wrapper';
 import { Formik, Form } from 'formik'
 import InputField from '../components/InputField';
 import { Box, Button } from '@chakra-ui/core';
 import { useForgotPasswordMutation } from '../generated/graphql';
 import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from '../utils/createUrqlClient';
+import Layout from '../components/Layout';
 
 const ForgotPassword: React.FC = () => {
   const [, forgotPassword] = useForgotPasswordMutation()
   const [complete, setComplete] = useState(false)
 
   return (
-    <Wrapper variant='small'>
+    <Layout variant='small'>
       <Formik
         initialValues={{ email: '' }}
         onSubmit={async (values, { }) => {
@@ -45,7 +45,7 @@ const ForgotPassword: React.FC = () => {
             )
         }}
       </Formik>
-    </Wrapper>
+    </Layout>
   )
 }
 
