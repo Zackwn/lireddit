@@ -5,8 +5,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  BaseEntity
+  BaseEntity,
+  OneToMany
 } from 'typeorm'
+import { Post } from "./Post";
 
 @ObjectType()
 @Entity()
@@ -23,6 +25,12 @@ export class User extends BaseEntity {
   @Column({ type: 'text', unique: true })
   email!: string
 
+  @OneToMany(() => Post, post => post.creator, { cascade: ['insert', 'update'] })
+  posts: Post[]
+
+  @Column({ type: 'text' })
+  password!: string
+
   @Field(() => String)
   @CreateDateColumn()
   createdAt: Date
@@ -30,7 +38,4 @@ export class User extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn()
   updatedAt: Date
-
-  @Column({ type: 'text' })
-  password!: string
 }

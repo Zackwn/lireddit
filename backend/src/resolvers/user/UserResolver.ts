@@ -21,7 +21,9 @@ export class UserResolver {
     if (!userId) {
       return undefined
     }
-    return User.findOne({ where: { id: userId } })
+    const user = await User.findOne({ where: { id: userId }, relations: ['posts'] })
+    console.log(user?.posts)
+    return user
   }
 
   @Mutation(() => UserResponse)
