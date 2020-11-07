@@ -22,15 +22,12 @@ const Login: React.FC = () => {
         onSubmit={async (values, { setErrors }) => {
           const errors = validateRequiredFields(values)
 
-          console.log(errors)
-
           if (errors) {
             return setErrors({
               ...errors
             })
           }
 
-          console.log('login...')
           const response = await login({
             password: values.password,
             usernameOrEmail: values.usernameOrEmail
@@ -41,8 +38,13 @@ const Login: React.FC = () => {
             setErrors({
               ...mapErrors
             })
+            // everthing went fine (user logged in)
           } else if (response.data?.login.user) {
-            router.push('/')
+            if (typeof router.query.next === 'string') {
+              router.push(router.query.next)
+            } else {
+              router.push('/')
+            }
           }
         }}
       >
