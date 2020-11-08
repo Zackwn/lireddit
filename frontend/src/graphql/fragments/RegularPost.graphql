@@ -1,6 +1,8 @@
 fragment RegularPost on Post {
   id
   title
+  text
+  textSnippet
   createdAt
   updatedAt
 }
