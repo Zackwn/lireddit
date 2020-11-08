@@ -41,6 +41,7 @@ export type Post = {
   creatorId: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  textSnippet: Scalars['String'];
 };
 
 export type User = {
@@ -133,7 +134,7 @@ export type RegularErrorFragment = (
 
 export type RegularPostFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'id' | 'title' | 'createdAt' | 'updatedAt'>
+  & Pick<Post, 'id' | 'title' | 'text' | 'textSnippet' | 'createdAt' | 'updatedAt'>
 );
 
 export type RegularUserFragment = (
@@ -253,6 +254,8 @@ export const RegularPostFragmentDoc = gql`
     fragment RegularPost on Post {
   id
   title
+  text
+  textSnippet
   createdAt
   updatedAt
 }
