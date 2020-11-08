@@ -1,12 +1,20 @@
-import { Resolver, Query, Ctx, Arg, Int, Mutation, UseMiddleware } from "type-graphql";
+import { Resolver, Query, Ctx, Arg, Int, Mutation, UseMiddleware, FieldResolver, Root } from "type-graphql";
 import { MyContext } from "src/types";
 import { Post } from "../../entities/Post";
 import { PostOptionsInput } from "./PostOptionsInput";
 import { isAuth } from "../../middlewares/isAuth";
 import { getConnection } from "typeorm";
+import { textToSippet } from "../../utils/formatPreviewText";
 
-@Resolver()
+@Resolver(Post)
 export class PostResolver {
+  @FieldResolver(() => String)
+  textSnippet(
+    @Root() root: Post
+  ) {
+    return textToSippet(root.text)
+  }
+
   @Query(() => [Post])
   async posts(
     @Arg('limit', () => Int) limit: number,
