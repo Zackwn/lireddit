@@ -3,15 +3,29 @@ import { MyContext } from "src/types";
 import { Post } from "../../entities/Post";
 import { PostOptionsInput } from "./PostOptionsInput";
 import { isAuth } from "../../middlewares/isAuth";
+import { getConnection } from "typeorm";
 
 @Resolver()
 export class PostResolver {
   @Query(() => [Post])
   async posts(
-    @Ctx() { }: MyContext
+    @Arg('limit', () => Int) limit: number,
+    @Arg('cursor', () => String, { nullable: true }) cursor: string | null
   ): Promise<Post[]> {
-    const posts = await Post.find()
-    return posts
+    const realLimit = Math.min(50, limit)
+    const queryBuilder = getConnection()
+      .getRepository(Post)
+      .createQueryBuilder("p")
+      .orderBy('"createdAt"', 'DESC') // Postgres don't lowercase text inside double quotes
+      .take(realLimit)
+
+    if (cursor) {
+      queryBuilder.where('"createdAt" < :cursor', {
+        cursor: new Date(parseInt(cursor))
+      })
+    }
+
+    return queryBuilder.getMany()
   }
 
   @Query(() => Post, { nullable: true })
